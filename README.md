@@ -1,5 +1,8 @@
 # Healthcare & Finance AI Chatbot
 
+<img width="540" alt="image" src="https://github.com/user-attachments/assets/c8f34e0e-1899-453e-958d-125d2e1d88c2">
+
+
 This project implements an AI-powered chatbot that can answer your questions about healthcare and finance. It utilizes a powerful combination of technologies:
 
 * **Langchain:** For building and managing the chatbot's conversational flow.
