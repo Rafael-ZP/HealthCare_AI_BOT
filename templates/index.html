@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Question Answering System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden; /* Hide horizontal scrollbar for sidebar transition */
+        }
+
+        header {
+            background: linear-gradient(to right, #007bff, #0056b3); 
+            color: #fff;
+            padding: 15px 20px;
+            text-align: center;
+            z-index: 1;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 900px;
+            margin: 20px auto;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* Sidebar Styles */
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 3; 
+            color: #050505;
+            transition: transform 0.3s ease; 
+        }
+
+        .hamburger:hover {
+            transform: scale(1.1); 
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #fff;
+            overflow-x: hidden;
+            transition: 0.5s ease;
+            padding-top: 60px;
+            z-index: 2;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2); 
+        }
+
+        .sidebar.open {
+            width: 250px;
+        }
+
+        .sidebar a {
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #333;
+            display: block;
+            transition: 0.3s;
+            border-bottom: 1px solid #eee; 
+        }
+
+        .sidebar a:hover {
+            background-color: #f8f9fa; 
+        }
+
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Main Content Sections */
+        .content-section {
+            opacity: 0; 
+            transform: translateY(20px); 
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .content-section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Forms */
+        form {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        textarea, 
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ced4da;
+            background-color: #fff;
+            border-radius: 4px;
+            color: #495057;
+            margin-bottom: 10px; 
+        }
+
+        input[type="submit"], input[type="file"] {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff; 
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        input[type="submit"]:hover, input[type="file"]:hover {
+            background-color: #0056b3; 
+        }
+
+        /* Result Container */
+        .result-container {
+            background-color: #fff;
+            color: #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 400px; 
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .result-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+
+        .result-section strong {
+            color: #333;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .result-section span {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Hidden Class */
+        .hidden {
+            display: none;
+        }
+
+        /* About Us Section */
+        #about-us {
+            background-color: #fff;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        #about-us h2 {
+            margin-top: 0;
+            font-size: 28px;
+            color: #333;
+        }
+
+        #about-us p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        #about-us ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #about-us ul li {
+            padding: 5px 0;
+            font-size: 16px;
+        }
+
+        #about-us ul li::before {
+            content: '\2022'; 
+            color: #007bff; 
+            padding-right: 10px;
+        }
+
+        /* Spinner Styles */
+        .spinner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .spinner-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #007bff; 
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .file-upload-button { 
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer; 
+    }
+
+    .file-upload-button:hover {
+        background-color: #0056b3;
+    }
+
+    .file-input { 
+        display: none; 
+    }
+
+        /* Typing Animation for Results */
+        .result-section .typing-animation {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+    border-right: .15em solid #007bff;
+    margin: 0 auto;
+    letter-spacing: .15em; /* Adjust as needed */
+    animation: 
+      typing 3.5s steps(40, end),
+      blink-caret .75s step-end infinite;
+    word-break: break-all; /* Added to break long words */
+  }
+
+          /* The typing effect */
+          @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+          }
+
+          /* The typewriter cursor effect */
+          @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #007bff }
+          }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>HEALTHCARE AI BOT</h1>
+    </header>
+
+    <div class="hamburger" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i> ☰
+    </div>
+
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleSidebar()">×</a>
+        <a href="#" onclick="showSection('home')">Home</a>
+        <a href="#" onclick="showSection('pdf-upload')">Ask from PDF</a>
+        <a href="#" onclick="showSection('faiss-qa')">Ask from Index</a>
+        <a href="#" onclick="showSection('about-us')">About Us</a>
+    </div>
+
+    <div class="container">
+
+        <div id="home" class="content-section show">
+            <h2>Welcome to the AI-Powered Question Answering System</h2>
+            <p>Choose an option from the sidebar to get started.</p>
+        </div>
+
+        <div id="pdf-upload" class="content-section hidden">
+            <h2>Ask a Question from a PDF</h2>
+            <form id="upload-form" action="/" method="post" enctype="multipart/form-data">
+                <input type="file" name="file">
+                <input type="submit" value="Upload">
+            </form>
+
+            <div id="pdf-query-section" class="hidden">
+                <h2>Ask a Question About the PDF</h2>
+                <form id="pdf-query-form" action="/query_pdf" method="post">
+                    <input type="hidden" name="filename" id="pdf-filename">
+                    <label for="pdf-question">Question:</label>
+                    <input type="text" name="question" id="pdf-question" required>
+                    <input type="submit" value="Ask">
+                </form>
+
+                <div id="pdf-result-container" class="result-container hidden">
+                    <h3>Query Result</h3>
+                    <div class="result-section">
+                        <p><strong>Question:</strong> <span id="pdf-asked-question"></span></p>
+                        <p><strong>Answer:</strong> <span class="typing-animation" id="pdf-answer"></span></p> 
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="faiss-qa" class="content-section hidden">
+            <h2>Ask a Question from Our Knowledge Base</h2>
+            <form id="faiss-qa-form" onsubmit="submitFaissQuery(event)">
+                <textarea id="faiss-query" name="query" rows="4" placeholder="Enter your question here..."></textarea>
+                <input type="submit" value="Submit">
+            </form>
+
+            <div id="faiss-result-container" class="result-container hidden">
+                <div class="result-section">
+                    <strong>Response:</strong>
+                    <span class="typing-animation" id="faiss-response"></span> 
+                </div>
+            </div>
+        </div>
+
+        <div id="about-us" class="content-section hidden">
+            <h2>About Us</h2>
+            <p>We provide a state-of-the-art QA system using advanced language models and embeddings. Our system is designed to offer accurate and contextually relevant answers from PDF documents and our pre-built knowledge base.</p>
+        </div>
+
+    </div> 
+
+    <div id="spinner-overlay" class="spinner-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function showSection(sectionId) {
+            // Hide all content sections
+            const contentSections = document.querySelectorAll('.content-section');
+            contentSections.forEach(section => {
+                section.classList.remove('show');
+                section.classList.add('hidden');
+            });
+
+            // Show the selected content section 
+            const selectedSection = document.getElementById(sectionId);
+            selectedSection.classList.remove('hidden');
+            selectedSection.classList.add('show'); 
+        }
+
+        // Event Listeners for Form Submissions
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            showSpinner(); 
+
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('pdf-filename').value = data.filename;
+                document.getElementById('pdf-query-section').classList.remove('hidden');
+                hideSpinner(); 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideSpinner(); 
+            });
+        });
+
+        document.getElementById('pdf-query-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const question = document.getElementById('pdf-question').value;
+            showSpinner(); 
+
+            fetch('/query_pdf', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('pdf-asked-question').textContent = question;
+                typeWriterEffect("pdf-answer", data.answer); 
+                document.getElementById('pdf-result-container').classList.remove('hidden');
+                hideSpinner(); 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideSpinner(); 
+            });
+        });
+
+        function submitFaissQuery(event) {
+            event.preventDefault();
+            const query = document.getElementById('faiss-query').value;
+            showSpinner(); 
+
+            fetch('/query_faiss', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'query': query
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                typeWriterEffect("faiss-response", data.response); 
+                document.getElementById('faiss-result-container').classList.remove('hidden');
+                hideSpinner(); 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideSpinner(); 
+            });
+        }
+
+        // Helper functions for the spinner and typing effect
+        function showSpinner() {
+            document.getElementById('spinner-overlay').classList.add('active');
+        }
+
+        function hideSpinner() {
+            document.getElementById('spinner-overlay').classList.remove('active');
+        }
+
+        function typeWriterEffect(elementId, text) {
+    const element = document.getElementById(elementId);
+    element.textContent = ""; // Clear previous text
+    let i = 0;
+    const speed = 70; // Adjust typing speed (milliseconds)
+
+    function typeWriter() {
+        if (i < text.length) {
+            // Add the next character to the element
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, speed);
+        } else {
+            // If typing is complete, ensure the last word is fully visible
+            element.scrollLeft = element.scrollWidth; 
+        }
+    }
+
+    typeWriter();
+}
+
+        // Show Home section by default
+        showSection('home');
+    </script>
+</body>
+</html>

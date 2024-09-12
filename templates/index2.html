@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA System</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #2d2f36;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 0;
+            overflow: auto;
+            transition: filter 0.3s ease;
+        }
+
+        header {
+            background-color: #1f2125;
+            color: #ffffff;
+            padding: 15px 20px;
+            font-size: 36px;
+            text-align: center;
+            z-index: 1;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            z-index: 1;
+            position: relative;
+        }
+
+        form {
+            background-color: #3a3c44;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        form:hover {
+            background-color: #44464e;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #565a65;
+            background-color: #4a4e59;
+            border-radius: 8px;
+            color: #e0e0e0;
+            box-sizing: border-box;
+            transition: border 0.3s ease, background-color 0.3s ease;
+        }
+
+        textarea:focus {
+            border: 1px solid #1e90ff;
+            background-color: #3a3e4a;
+        }
+
+        input[type="submit"] {
+            padding: 14px 28px;
+            border-radius: 8px;
+            background: #1e90ff;
+            border: none;
+            font-family: inherit;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.4s, transform 0.3s;
+            color: #ffffff;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto 0;
+        }
+
+        input[type="submit"]:hover {
+            background: #1c86ee;
+        }
+
+        input[type="submit"]:active {
+            transform: scale(0.97);
+            background: #1874cd;
+        }
+
+        .result-container {
+            background-color: #3a3c44;
+            color: #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 80vh;
+            margin-top: 20px;
+            position: relative;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .result-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #565a65;
+            padding-bottom: 20px;
+        }
+
+        .result-section strong {
+            color: #1e90ff;
+            font-size: 20px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .result-section span {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #cccccc;
+            animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+            white-space: nowrap;
+            overflow: hidden;
+            display: inline-block;
+            border-right: 3px solid;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #1e90ff; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .show-more-btn {
+            color: #cccccc;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        #download-report-btn {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            border: 1px solid #565a65;
+            padding: 10px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #4a4e59;
+            color: #e0e0e0;
+        }
+
+        .hamburger {
+            font-size: 30px;
+            cursor: pointer;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 2;
+            color: #e0e0e0;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger:hover {
+            transform: rotate(90deg);
+        }
+
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: width 0.5s ease;
+            padding-top: 60px;
+            z-index: 2;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #e0e0e0;
+            display: block;
+            transition: background-color 0.3s, padding-left 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #333;
+            padding-left: 20px;
+        }
+
+        .sidebar .close-btn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+        }
+
+        .nav-buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .nav-buttons button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            background-color: #555;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .nav-buttons button.active {
+            background-color: #333;
+        }
+
+        .nav-buttons button:hover {
+            background-color: #777;
+        }
+
+        .nav-buttons button:active {
+            transform: scale(0.95);
+        }
+
+        #about-us {
+            background-color: #3a3c44;
+            color: #e0e0e0;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #about-us h2 {
+            margin-top: 0;
+            font-size: 28px;
+            color: #1e90ff;
+        }
+
+        #about-us p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        #about-us ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #about-us ul li {
+            padding: 5px 0;
+            font-size: 16px;
+        }
+
+        #about-us ul li::before {
+            content: '•';
+            color: #1e90ff;
+            padding-right: 10px;
+        }
+
+        .pagination-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .pagination-controls button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            background-color: #555;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .pagination-controls button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+
+        .pagination-controls button:hover {
+            background-color: #777;
+        }
+
+        .pagination-controls button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        QA System
+    </header>
+
+    <div class="container">
+        <span class="hamburger" onclick="openSidebar()">&#9776;</span>
+        <div class="sidebar" id="sidebar">
+            <a href="javascript:void(0)" class="close-btn" onclick="closeSidebar()">&times;</a>
+            <a href="#">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">Services</a>
+            <a href="#">Contact</a>
+        </div>
+
+        <form id="qa-form" onsubmit="event.preventDefault(); getAnswer();">
+            <label for="question">Enter your question:</label>
+            <textarea id="question" name="question" rows="4" placeholder="Type your question here..."></textarea>
+            <input type="submit" value="Ask">
+        </form>
+
+        <div id="result" class="result-container hidden"></div>
+
+        <div id="about-us">
+            <h2>About Us</h2>
+            <p>Welcome to our QA System. Our goal is to provide accurate and concise answers to your questions. We strive to deliver a seamless and interactive experience for all users.</p>
+            <ul>
+                <li>Reliable Answers</li>
+                <li>Efficient Information Retrieval</li>
+                <li>User-Friendly Interface</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const width = sidebar.style.width;
+            sidebar.style.width = width === '250px' ? '0' : '250px';
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.container > div').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        function submitQuery(event) {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+            const spinnerOverlay = document.getElementById('spinner-overlay');
+
+            spinnerOverlay.classList.add('active'); // Show spinner
+
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'query': query
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result-container').classList.remove('hidden');
+                document.getElementById('response').textContent = data.response;
+                spinnerOverlay.classList.remove('active'); // Hide spinner
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                spinnerOverlay.classList.remove('active'); // Hide spinner on error
+            });
+        }
+
+        // Show Home section by default
+        showSection('home');
+    </script>
+</body>
+</html>
